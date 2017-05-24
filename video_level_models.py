@@ -116,6 +116,10 @@ class TwoLayerModel(models.BaseModel):
       model in the 'predictions' key. The dimensions of the tensor are
       batch_size x num_classes."""
 
+    # Initialize weights for projection
+    w_s = tf.Variable(tf.random_normal(shape=[1152, 1024], stddev=0.01))
+    input_projected = tf.matmul(model_input, w_s)
+
     hidden1 = tf.layers.dense(
         inputs=model_input, units=num_hidden_units, activation=None,
         kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_1')
@@ -128,7 +132,7 @@ class TwoLayerModel(models.BaseModel):
 
 
     #input_plus_h1 = tf.add(model_input, dropout1)
-    input_plus_h1 = tf.add(model_input, relu1)
+    input_plus_h1 = tf.add(input_projected, relu1)
 
 
     output = slim.fully_connected(
@@ -154,6 +158,10 @@ class ThreeLayerModel(models.BaseModel):
       model in the 'predictions' key. The dimensions of the tensor are
       batch_size x num_classes."""
 
+    # Initialize weights for projection
+    w_s = tf.Variable(tf.random_normal(shape=[1152, 1024], stddev=0.01))
+    input_projected = tf.matmul(model_input, w_s)
+
     hidden1 = tf.layers.dense(
         inputs=model_input, units=num_hidden_units, activation=None,
         kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_1')
@@ -166,7 +174,7 @@ class ThreeLayerModel(models.BaseModel):
 
 
     #input_plus_h1 = tf.add(model_input, dropout1)
-    input_plus_h1 = tf.add(model_input, relu1)
+    input_plus_h1 = tf.add(input_projected, relu1)
 
 
     hidden2 = tf.layers.dense(
@@ -207,6 +215,10 @@ class FourLayerModel(models.BaseModel):
       model in the 'predictions' key. The dimensions of the tensor are
       batch_size x num_classes."""
 
+    # Initialize weights for projection
+    w_s = tf.Variable(tf.random_normal(shape=[1152, 1024], stddev=0.01))
+    input_projected = tf.matmul(model_input, w_s)
+
     hidden1 = tf.layers.dense(
         inputs=model_input, units=num_hidden_units, activation=None,
         kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_1')
@@ -219,7 +231,7 @@ class FourLayerModel(models.BaseModel):
 
 
     #input_plus_h1 = tf.add(model_input, dropout1)
-    input_plus_h1 = tf.add(model_input, relu1)
+    input_plus_h1 = tf.add(input_projected, relu1)
 
 
     hidden2 = tf.layers.dense(
