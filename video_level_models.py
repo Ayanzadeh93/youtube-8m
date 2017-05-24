@@ -101,3 +101,164 @@ class MoeModel(models.BaseModel):
     final_probabilities = tf.reshape(final_probabilities_by_class_and_batch,
                                      [-1, vocab_size])
     return {"predictions": final_probabilities}
+
+
+
+class TwoLayerModel(models.BaseModel):
+
+  def create_model(self, model_input, vocab_size, num_hidden_units=1024, l2_penalty=1e-8, prefix='', **unused_params):
+    """Creates a logistic model.
+    Args:
+      model_input: 'batch' x 'num_features' matrix of input features.
+      vocab_size: The number of classes in the dataset.
+    Returns:
+      A dictionary with a tensor containing the probability predictions of the
+      model in the 'predictions' key. The dimensions of the tensor are
+      batch_size x num_classes."""
+
+    hidden1 = tf.layers.dense(
+        inputs=model_input, units=num_hidden_units, activation=None,
+        kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_1')
+
+    bn1 = slim.batch_norm(hidden1, scope=prefix+'bn1')
+
+    relu1 = tf.nn.relu(bn1, name=prefix+'relu1' )
+
+    #dropout1 = tf.layers.dropout(inputs=relu1, rate=0.5, name=prefix+"dropout1")
+
+
+    #input_plus_h1 = tf.add(model_input, dropout1)
+    input_plus_h1 = tf.add(model_input, relu1)
+
+
+    output = slim.fully_connected(
+        input_plus_h1, vocab_size, activation_fn=tf.nn.sigmoid,
+        weights_regularizer=slim.l2_regularizer(l2_penalty), scope=prefix+'fc_2')
+
+
+    weights_norm = tf.add_n(tf.losses.get_regularization_losses())
+    
+    return {"predictions": output, "regularization_loss": weights_norm}
+    #return {"predictions": output}
+
+
+class ThreeLayerModel(models.BaseModel):
+
+  def create_model(self, model_input, vocab_size, num_hidden_units=1024, l2_penalty=1e-8, prefix='', **unused_params):
+    """Creates a logistic model.
+    Args:
+      model_input: 'batch' x 'num_features' matrix of input features.
+      vocab_size: The number of classes in the dataset.
+    Returns:
+      A dictionary with a tensor containing the probability predictions of the
+      model in the 'predictions' key. The dimensions of the tensor are
+      batch_size x num_classes."""
+
+    hidden1 = tf.layers.dense(
+        inputs=model_input, units=num_hidden_units, activation=None,
+        kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_1')
+
+    bn1 = slim.batch_norm(hidden1, scope=prefix+'bn1')
+
+    relu1 = tf.nn.relu(bn1, name=prefix+'relu1' )
+
+    #dropout1 = tf.layers.dropout(inputs=relu1, rate=0.5, name=prefix+"dropout1")
+
+
+    #input_plus_h1 = tf.add(model_input, dropout1)
+    input_plus_h1 = tf.add(model_input, relu1)
+
+
+    hidden2 = tf.layers.dense(
+        inputs=input_plus_h1, units=num_hidden_units, activation=None,
+        kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_2')
+
+    bn2 = slim.batch_norm(hidden2, scope=prefix+'bn2')
+
+    relu2 = tf.nn.relu(bn2, name=prefix+'relu2' )
+
+    #dropout2 = tf.layers.dropout(inputs=relu2, rate=0.5, name=prefix+"dropout2")
+
+
+    #h1_plus_h2 = tf.add(input_plus_h1, dropout2)
+    h1_plus_h2 = tf.add(input_plus_h1, relu2)
+
+    output = slim.fully_connected(
+        h1_plus_h2, vocab_size, activation_fn=tf.nn.sigmoid,
+        weights_regularizer=slim.l2_regularizer(l2_penalty), scope=prefix+'fc_3')
+
+
+    weights_norm = tf.add_n(tf.losses.get_regularization_losses())
+    
+    return {"predictions": output, "regularization_loss": weights_norm}
+    #return {"predictions": output}
+
+
+
+class FourLayerModel(models.BaseModel):
+
+  def create_model(self, model_input, vocab_size, num_hidden_units=1024, l2_penalty=1e-8, prefix='', **unused_params):
+    """Creates a logistic model.
+    Args:
+      model_input: 'batch' x 'num_features' matrix of input features.
+      vocab_size: The number of classes in the dataset.
+    Returns:
+      A dictionary with a tensor containing the probability predictions of the
+      model in the 'predictions' key. The dimensions of the tensor are
+      batch_size x num_classes."""
+
+    hidden1 = tf.layers.dense(
+        inputs=model_input, units=num_hidden_units, activation=None,
+        kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_1')
+
+    bn1 = slim.batch_norm(hidden1, scope=prefix+'bn1')
+
+    relu1 = tf.nn.relu(bn1, name=prefix+'relu1' )
+
+    #dropout1 = tf.layers.dropout(inputs=relu1, rate=0.5, name=prefix+"dropout1")
+
+
+    #input_plus_h1 = tf.add(model_input, dropout1)
+    input_plus_h1 = tf.add(model_input, relu1)
+
+
+    hidden2 = tf.layers.dense(
+        inputs=input_plus_h1, units=num_hidden_units, activation=None,
+        kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_2')
+
+    bn2 = slim.batch_norm(hidden2, scope=prefix+'bn2')
+
+    relu2 = tf.nn.relu(bn2, name=prefix+'relu2' )
+
+    #dropout2 = tf.layers.dropout(inputs=relu2, rate=0.5, name=prefix+"dropout2")
+
+
+    #h1_plus_h2 = tf.add(input_plus_h1, dropout2)
+    h1_plus_h2 = tf.add(input_plus_h1, relu2)
+
+
+
+    hidden3 = tf.layers.dense(
+        inputs=h1_plus_h2, units=num_hidden_units, activation=None,
+        kernel_regularizer=slim.l2_regularizer(l2_penalty), name=prefix+'fc_3')
+
+    bn3 = slim.batch_norm(hidden3, scope=prefix+'bn3')
+
+    relu3 = tf.nn.relu(bn3, name=prefix+'relu3' )
+
+    #dropout3 = tf.layers.dropout(inputs=relu3, rate=0.5, name=prefix+"dropout3")
+
+
+    #h2_plus_h3 = tf.add(h1_plus_h2, dropout3)
+    h2_plus_h3 = tf.add(h1_plus_h2, relu3)
+
+
+    output = slim.fully_connected(
+        h2_plus_h3, vocab_size, activation_fn=tf.nn.sigmoid,
+        weights_regularizer=slim.l2_regularizer(l2_penalty), scope=prefix+'fc_4')
+
+
+    weights_norm = tf.add_n(tf.losses.get_regularization_losses())
+    
+    return {"predictions": output, "regularization_loss": weights_norm}
+    #return {"predictions": output}
